@@ -1,0 +1,246 @@
+substitutions:
+  plug_name: esp32_balkon
+
+esphome:
+  name: ${plug_name}
+  platform: ESP32
+  comment: Балкон
+  board: esp-wrover-kit
+
+wifi:
+  ssid: !secret ap_ssid
+  password: !secret ap_password
+  ap:
+    ssid: "${plug_name} Hotspot"
+    password: "J4buzjhCMSA2"
+#  use_address: 192.168.90.143
+captive_portal:
+
+#web_server:
+#  port: 80
+#  auth:
+#    username: esp
+#    password: 12345
+
+logger:
+
+i2c:
+  sda: 16
+  scl: 17
+  scan: True
+  id: bus_a
+ota:
+  password: !secret ota
+api:
+  password: !secret api
+esp32_ble_tracker:
+  scan_parameters:
+    active: false
+
+sensor:
+  - platform: wifi_signal
+    name: "${plug_name} WiFi"
+    update_interval: 60s
+
+  - platform: uptime
+    id: device_uptime
+    internal: true
+
+  - platform: dht
+    model: dht22
+    pin: 
+      number: 22
+      mode: INPUT_PULLUP
+    temperature:
+      name: "${plug_name} Temperature"
+    humidity:
+      name: "${plug_name} Humidity"
+    update_interval: 60s
+
+  - platform: rotary_encoder
+    name: "${plug_name} Rotary Encoder"
+    id: rotary_encoder_balkon
+    pin_a: 27
+    pin_b: 26
+    min_value: 0
+    max_value: 100
+    resolution: 2
+    filters:
+      - delta: 2
+
+    on_clockwise:
+      - light.dim_relative:
+          id: "led1" #id лампы
+          relative_brightness: 2% #на сколько увеличить 
+          transition_length: 500ms #за какое время
+    on_anticlockwise:
+      - light.dim_relative:
+          id: "led1" #id лампы
+          relative_brightness: -2% #на сколько уменьшить 
+          transition_length: 500ms #за какое время
+
+binary_sensor:
+  - platform: ble_presence
+    mac_address: 72:64:6C:28:FF:FF
+    name: "NRF51822_white_3"
+
+  - platform: ble_presence
+    mac_address: 72:64:6C:28:FF:DD
+    name: "NRF51822_taneza_3"
+
+  - platform: ble_presence
+    mac_address: 72:64:6C:28:FF:EE
+    name: "NRF51822_denis_3"
+
+#Выключатель
+  - platform: gpio
+    pin:
+      number: 33
+#      mode: INPUT_PULLUP
+      inverted: false
+    name: "${plug_name} Button1"
+    filters:
+      - delayed_on: 50ms
+      - delayed_off: 50ms
+    on_multi_click:
+      - timing:
+        - ON for at most 0.5s
+        - OFF for at least 0.5s
+        then:
+        - switch.toggle: Relay
+      - timing:
+        - ON for 0.5s to 2s
+        - OFF for at least 0.5s
+        then:
+        - light.toggle: led2
+#Энкодер
+  - platform: gpio
+    pin:
+      number: 25
+      inverted: True
+    name: "${plug_name} Button2"
+    filters:
+      - delayed_on: 100ms
+      - delayed_off: 100ms
+
+    on_multi_click:
+      - timing:
+        - ON for at most 0.5s
+        - OFF for at least 0.5s
+        then:
+        - light.toggle: led1
+      - timing:
+        - ON for 0.5s to 2s
+        - OFF for at least 0.5s
+        then:
+        - switch.toggle: Relay
+
+  - platform: gpio
+    pin: 
+      number: 23
+#      mode: INPUT_PULLDOWN
+    name: "${plug_name} MPIR"
+    device_class: motion
+
+  - platform: gpio
+    pin:
+     number: 32
+     mode: INPUT
+     inverted: no
+    name: "${plug_name} Windows"
+    device_class: window
+    filters:
+      - delayed_on: 1s
+      - delayed_off: 1s
+
+  - platform: gpio
+    pin:
+     number: 35
+     mode: INPUT
+     inverted: no
+    name: "${plug_name} Windows2"
+    device_class: window
+    filters:
+      - delayed_on: 1s
+      - delayed_off: 1s
+
+  - platform: gpio
+    pin:
+     number: 34
+     mode: INPUT
+     inverted: no
+    name: "${plug_name} Windows3"
+    device_class: window
+    filters:
+      - delayed_on: 1s
+      - delayed_off: 1s
+
+switch:
+  - platform: gpio
+    name: "${plug_name} Relay"
+    icon: mdi:wall-sconce-flat
+    id: Relay
+    pin:
+      number: 4
+      inverted: false
+#      mode: INPUT_PULLDOWN
+
+  - platform: restart
+    name: "${plug_name} restart"
+
+
+light:
+  - platform: monochromatic
+    name: "${plug_name} LED1"
+    output: output_light1
+    id: led1
+    default_transition_length: 0.3s   
+
+  - platform: monochromatic
+    name: "${plug_name} LED2"
+    output: output_light2
+    id: led2
+    default_transition_length: 3s
+
+  - platform: monochromatic
+    name: "${plug_name} LED3"
+    output: output_light3
+    id: led3
+    default_transition_length: 0.3s
+
+output:
+  - platform: ledc
+    id: output_light1
+    pin: 21
+
+  - platform: ledc
+    id: output_light2
+    pin: 19
+
+  - platform: ledc
+    id: output_light3
+    pin: 18
+
+
+text_sensor:
+  - platform: version
+    name: "${plug_name} Version"
+    hide_timestamp: True
+
+  - platform: template
+    name: "${plug_name} uptime"
+    lambda: |-
+      uint32_t uptime = (id(device_uptime).state);
+      int minutes = (uptime % 3600) / 60;
+      int hours = (uptime % 86400) / 3600;
+      int days = uptime / 86400;
+      if (days > 0) {
+        return { (String(days) + " д." + String(hours) + " ч." + String(minutes) + " мин.").c_str() };
+      }
+      if (hours > 0) {
+        return { (String(hours) + " ч. " + String(minutes) + " мин.").c_str() };
+      } else {
+        return { (String(minutes) + " мин.").c_str() };
+      }
+    update_interval: 60s
+    icon: mdi:clock-start
