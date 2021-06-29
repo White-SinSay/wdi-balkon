@@ -53,7 +53,7 @@ https://aliexpress.ru/item/32847011772.html
 ### 3D вид
 ![Схема](https://github.com/White-SinSay/wdi-balkon/blob/main/images/PCB_3D.png)
 ### СХЕМА
-![Схема](https://github.com/White-SinSay/wdi-balkon/main/images/Schematic.png)
+![Схема](https://github.com/White-SinSay/wdi-balkon/blob/main/images/Schematic.png)
 [Схема в EasyEDA](https://oshwlab.com/ivahov555/wdi-esp32_balkon)
 ### КАК НАСТРОИТЬ
 Прошивка собрана в аддоне ESPHome.
