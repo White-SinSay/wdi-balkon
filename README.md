@@ -48,13 +48,13 @@ https://aliexpress.ru/item/32744837236.html
 https://aliexpress.ru/item/32847011772.html
 
 ### Внешний вид платы
-![Схема](https://github.com/White-SinSay/wdi-koridor/blob/main/images/PCB_layer_up.png)
-![Схема](https://github.com/White-SinSay/wdi-koridor/blob/main/images/PCB_layer_down.png)
+![Схема](https://github.com/White-SinSay/wdi-balkon/blob/main/images/PCB_layer_up.png)
+![Схема](https://github.com/White-SinSay/wdi-balkon/blob/main/images/PCB_layer_down.png)
 ### 3D вид
-![Схема](https://github.com/White-SinSay/wdi-koridor/blob/main/images/PCB_3D.png)
+![Схема](https://github.com/White-SinSay/wdi-balkon/blob/main/images/PCB_3D.png)
 ### СХЕМА
-![Схема](https://github.com/White-SinSay/wdi-koridor/blob/main/images/Schematic.png)
-[Схема в EasyEDA](https://oshwlab.com/ivahov555/wdi-esp32_koridor)
+![Схема](https://github.com/White-SinSay/wdi-balkonblob/main/images/Schematic.png)
+[Схема в EasyEDA](https://oshwlab.com/ivahov555/wdi-esp32_balkon)
 ### КАК НАСТРОИТЬ
 Прошивка собрана в аддоне ESPHome.
 Про него можно посмотреть у меня на Youtube канале (https://www.youtube.com/channel/UCoZhZPAewlcDGRc_s6Masrw)
